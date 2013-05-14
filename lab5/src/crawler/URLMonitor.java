@@ -1,4 +1,4 @@
-package threaded;
+package crawler;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -26,9 +26,7 @@ public class URLMonitor {
 	}
 
 	public synchronized void addTraversed(String s) {
-		if (!traversedURLs.contains(s)) {
-			traversedURLs.add(s);
-		}
+		traversedURLs.add(s);
 	}
 	
 	public synchronized int getNbrTraversed() {
@@ -41,5 +39,17 @@ public class URLMonitor {
 	
 	public synchronized Queue<String> getTraversed() {
 		return traversedURLs;
+	}
+	
+	public synchronized void setTraversed(Queue<String> trav) {
+		this.traversedURLs = trav;
+	}
+	
+	public synchronized Queue<String> getRemaining() {
+		return remainingURLs;
+	}
+	
+	public synchronized void setRemaining(Queue<String> rem) {
+		this.remainingURLs = rem;
 	}
 }

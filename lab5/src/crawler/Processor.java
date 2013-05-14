@@ -1,14 +1,15 @@
-package threaded;
+package crawler;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Queue;
 
 import javax.swing.text.html.HTMLEditorKit;
 
-import parser.ParserGetter;
 
 public class Processor extends Thread {
 	private URLMonitor mon;
@@ -18,7 +19,7 @@ public class Processor extends Thread {
 	public Processor(URLMonitor mon, String baseURL) {
 		this.mon = mon;
 		this.baseURL = baseURL;
-		s = new Spider(this, mon, baseURL);
+		s = new Spider(mon, baseURL);
 	}
 
 	public void run() {
@@ -30,12 +31,12 @@ public class Processor extends Thread {
 				String href = mon.getNext();
 				URL url = null;
 				if (href.startsWith("mailto")) {
-					s.add(href, true);
+					mon.addTraversed(href);
 					continue;
 				} else if (href.startsWith("http")) {
 					url = new URL(href);
 				} else {
-					url = new URL(new URL(getBaseURL()), href);
+					url = new URL(new URL(baseURL), href);
 				}
 
 				InputStream in = new BufferedInputStream(url.openStream());
@@ -47,21 +48,9 @@ public class Processor extends Thread {
 			}
 		}
 
-//		System.out.println();
-//		System.out.println();
-//		for (String s : mailto)
-//			System.out.println(s);
-//		System.out.println();
-//		for (String s : urls) {
-//			System.out.println(s);
-//		}
 	}
 	
-	public synchronized void setBaseURL(String baseURL) {
+	public void setBaseURL(String baseURL) {
 		this.baseURL = baseURL;
-	}
-
-	public synchronized String getBaseURL() {
-		return baseURL;
 	}
 }

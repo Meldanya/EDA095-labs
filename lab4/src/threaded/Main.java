@@ -6,11 +6,11 @@ import java.util.Queue;
 public class Main {
 	public static void main(String[] args) {
 		URLMonitor mon = new URLMonitor();
-		mon.addRemaining("http://cs.lth.se/eda095/");
+		mon.addRemaining("http://cs.lth.se/eda095");
 
 		ArrayList<Processor> processors = new ArrayList<Processor>();
 		for (int i = 0; i < 10; i++) {
-			Processor p = new Processor(mon);
+			Processor p = new Processor(mon, "http://cs.lth.se/eda095");
 			processors.add(p);
 			p.start();
 		}

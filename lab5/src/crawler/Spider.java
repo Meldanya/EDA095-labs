@@ -1,7 +1,4 @@
-package threaded;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+package crawler;
 
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
@@ -10,12 +7,10 @@ import javax.swing.text.html.HTMLEditorKit;
 public class Spider extends HTMLEditorKit.ParserCallback {
 	private URLMonitor mon;
 	private String baseURL;
-	private Processor p;
 
-	public Spider(Processor p, URLMonitor mon, String baseUrl) {
+	public Spider(URLMonitor mon, String baseUrl) {
 		this.mon = mon;
 		this.baseURL = baseUrl;
-		this.p = p;
 	}
 
 	public void handleStartTag(HTML.Tag tag, MutableAttributeSet a, int position) {
@@ -34,7 +29,6 @@ public class Spider extends HTMLEditorKit.ParserCallback {
 		if (t == HTML.Tag.BASE) {
 			href = (String) a.getAttribute(HTML.Attribute.HREF);
 			baseURL = href;
-			p.setBaseURL(baseURL);
 		}
 		if (t == HTML.Tag.IMG) {
 			href = (String) a.getAttribute(HTML.Attribute.SRC);
@@ -44,8 +38,7 @@ public class Spider extends HTMLEditorKit.ParserCallback {
 
 	public void add(String href, boolean traversed) {
 		if (href != null) {
-			if (href.startsWith("javascript") || href.startsWith("news")) return;
-			if (href.startsWith("http") || href.startsWith("mailto")) {
+			if (href.startsWith("http")) {
 				if (traversed) {
 					mon.addTraversed(href);
 				} else {
@@ -53,17 +46,9 @@ public class Spider extends HTMLEditorKit.ParserCallback {
 				}
 			} else {
 				if (traversed) {
-					try {
-						mon.addTraversed(new URL(new URL(baseURL), href).toString());
-					} catch (MalformedURLException e) {
-						System.err.println("Fail: " + baseURL + href);
-					}
+					mon.addTraversed(baseURL + href);
 				} else {
-					try {
-						mon.addRemaining(new URL(new URL(baseURL), href).toString());
-					} catch (MalformedURLException e) {
-						System.err.println("Fail: " + baseURL + href);
-					}
+					mon.addRemaining(baseURL + href);
 				}
 			}
 		}
